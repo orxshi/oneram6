@@ -9,3 +9,4 @@ Gmsh version: 4.7.1
 
 ## Images
 ![](/images/1.png)
+<img src="/images/1.png" width="48">

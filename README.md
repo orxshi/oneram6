@@ -12,10 +12,17 @@ Gmsh version: 4.7.1
 
 ## Images
 <p float="left">
-<img src="/images/1.png" width="300" alt="The beautiful MDN logo.">
+<img src="/images/1.png" width="300">
 <img src="/images/2.png" width="300">
 <img src="/images/3.png" width="300">
 <img src="/images/4.png" width="300">
 <img src="/images/5.png" width="300">
 <img src="/images/6.png" width="300">
 </p>
+
+<figure>
+  <img
+  <img src="/images/1.png" width="300"
+  alt="The beautiful MDN logo.">
+  <figcaption>MDN Logo</figcaption>
+</figure>

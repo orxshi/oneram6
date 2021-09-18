@@ -8,4 +8,4 @@ FreeCAD version: 0.18.4
 Gmsh version: 4.7.1
 
 ## Images
-<img src="/images/1.png" width="100">
+<img src="/images/1.png" width="300">

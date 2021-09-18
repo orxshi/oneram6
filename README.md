@@ -40,5 +40,15 @@ Gmsh version: 4.7.1
 
 <figure>
   <img src="/images/6.png" width="300">
-  <figcaption>geo file in Gmsh.</figcaption>
+  <figcaption>Geometry.</figcaption>
+</figure>
+
+<figure>
+  <img src="/images/8.png" width="300">
+  <figcaption>Tetrahedral mesh.</figcaption>
+</figure>
+
+<figure>
+  <img src="/images/9.png" width="300">
+  <figcaption>Close-up view to airfoil.</figcaption>
 </figure>

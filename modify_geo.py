@@ -77,7 +77,7 @@ def modify_geo(out_file_name, shape_name):
     filedata.append('Mesh.MshFileVersion = 2.2;\n')
     filedata.append('Mesh.MeshSizeExtendFromBoundary = 0;\n')
     filedata.append('Mesh.RandomFactor = 1e-6;\n\n')
-    filedata.append('lc = 0.0025;\n')
+    filedata.append('lc = 10;\n')
     filedata.append('Field[1] = Distance;\n')
     filedata.append('Field[1].SurfacesList = {' + matches[0] + '};\n')
     filedata.append('Field[1].NumPointsPerCurve = 200;\n')

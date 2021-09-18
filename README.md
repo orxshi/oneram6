@@ -1,8 +1,8 @@
 # FreeCAD python script to generate ONERA M6 mesh.
 
-This python/freecad script generates an ONERA M6 wing. The script generates a file with .geo extension to be read by Gmsh mesh generator.
+The script generates a file with .geo extension to be read by Gmsh mesh generator.
 
-The geometry is based on https://www.grc.nasa.gov/www/wind/valid/m6wing/m6wing.html.
+The geometry is based on https://www.grc.nasa.gov/www/wind/valid/m6wing/m6wing.html.  
 For boundary conditions see https://su2code.github.io/tutorials/Inviscid_ONERAM6.
 
 ## Tested on

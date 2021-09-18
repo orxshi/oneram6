@@ -9,11 +9,16 @@ For boundary conditions see https://su2code.github.io/tutorials/Inviscid_ONERAM6
 FreeCAD version: 0.18.4  
 Gmsh version: 4.7.1
 
-<p float="left">
-<img src="/images/1.png" width="300">
-</p>
 
 ## Images
+<p float="left">
+<img src="/images/1.png" width="300">
+<img src="/images/2.png" width="300">
+<img src="/images/3.png" width="300">
+<img src="/images/4.png" width="300">
+<img src="/images/5.png" width="300">
+<img src="/images/6.png" width="300">
+</p>
 <img src="/images/1.png" width="300">
 <img src="/images/2.png" width="300">
 <img src="/images/3.png" width="300">

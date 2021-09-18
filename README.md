@@ -8,5 +8,4 @@ FreeCAD version: 0.18.4
 Gmsh version: 4.7.1
 
 ## Images
-![](/images/1.png)
-<img src="/images/1.png" width="48">
+<img src="/images/1.png" width="100">

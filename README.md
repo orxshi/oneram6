@@ -21,26 +21,16 @@ Gmsh version: 4.7.1
   <figcaption>Top view of the wing.</figcaption>
 </figure>
 
-<figure>
-  <img src="/images/3.png" width="300">
-  <figcaption>Close-up view of the base section.</figcaption>
-</figure>
-
-<figure>
-  <img src="/images/4.png" width="300">
-  <figcaption>Close-up view of the base section showing blunt trailing edge.</figcaption>
-</figure>
-
-<figure>
-  <img src="/images/5.png" width="300">
-  <figcaption>Outer boundary in shape of a box.</figcaption>
-</figure>
-
 ## Gmsh images
 
 <figure>
   <img src="/images/6.png" width="300">
-  <figcaption>Geometry.</figcaption>
+  <figcaption>Geometry from isometric view.</figcaption>
+</figure>
+
+<figure>
+  <img src="/images/7.png" width="300">
+  <figcaption>Geometry from another view to show symmetry plane.</figcaption>
 </figure>
 
 <figure>

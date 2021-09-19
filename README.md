@@ -34,11 +34,11 @@ Gmsh version: 4.7.1
 </figure>
 
 <figure>
-  <img src="/images/8.png" width="300">
+  <img src="/images/10.png" width="300">
   <figcaption>Tetrahedral mesh.</figcaption>
 </figure>
 
 <figure>
-  <img src="/images/9.png" width="300">
+  <img src="/images/11.png" width="300">
   <figcaption>Close-up view to airfoil.</figcaption>
 </figure>

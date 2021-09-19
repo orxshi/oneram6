@@ -6,6 +6,7 @@
 import sys
 import math
 import numpy
+from copy import deepcopy
 
 sys.path.append('/usr/lib/freecad/lib/')
 
@@ -42,9 +43,11 @@ def make_wing(points_base, points_tip, span):
 
     # Create base section of the wing.
     polygon_base = Part.makePolygon(points_base)
+    Part.show(polygon_base)
 
     # Create tip section of the wing.
     polygon_tip = Part.makePolygon(points_tip)
+    Part.show(polygon_tip)
 
     loft = Part.makeLoft([polygon_base, polygon_tip], True)
 
@@ -54,43 +57,65 @@ def make_wing(points_base, points_tip, span):
 doc = FreeCAD.newDocument('newdoc')
 
 # Parameters
-chord = 805.9 # mm
+chord_base = 805.9 # mm
 z_base = 0 # z coordinate of airfoil at base section. 
 xl_base = 0 # x coordinate of leading edge at base section.
-xt_base = xl_base + chord # x coordinate of trailing edge at base section.
+xt_base = xl_base + chord_base # x coordinate of trailing edge at base section.
 y_base = 0 # y coordinate of airfoil at base section.
+origin = FreeCAD.Vector(xl_base, y_base, z_base)
 span = 1196.3 # mm
 le_sweep = 30 # degrees
 te_sweep = 15.8 # degrees
 # A box is used to model farfield and symmetry boundaries.
 # See https://su2code.github.io/tutorials/Inviscid_ONERAM6 for reference.
-box_dx = 20 * chord
-box_dy = 20 * chord
+box_dx = 20 * chord_base
+box_dy = 20 * chord_base
 box_dz = 10 * span
 
 # Get the distance between leading edges at the base and the tip sections
 # and chord of the airfoil at the tip section.
 dxl, chord_tip = compute_tip_section(xl_base, le_sweep, te_sweep, span)
 
-# Airfoil coordinates for the base section for chord = 805.9 mm is generated in airfoiltools.com and stored in oa209-il-805.9.csv.
-# With the given parameters, chord at tip section is computed as chord_tip = 453.7 mm.
-# Airfoil coordinates are generated in airfoiltools.com for the given chord_tip and stored in oa209-il-453.7.csv.
+# In airfoil.txt, chord = 1.
+chord_ref = 1
 
-points_base = []
-with open("oa209-il-805.9.csv") as fp:
+# Chord at the base section and reference chord are different.
+# So, the following is a scaling factor.
+scale_base = chord_base / chord_ref
+
+# In airfoil.txt upper airfoil points are provided.
+upper_base = [] # storage for upper airfoil points.
+with open("airfoil.txt") as fp:
     lines = fp.readlines()
     for line in lines:
-        x = line.split(",")[0]
-        y = line.split(",")[1]
-        points_base.append(FreeCAD.Vector(xl_base + float(x), y_base + float(y), z_base))
+        x = float(line.split()[0])
+        y = float(line.split()[1])
+        z = z_base
+        v = FreeCAD.Vector(x, y, z)
+        v.scale(scale_base, scale_base, 1) # scale the airfoil to correct chord.
+        v.add(origin) # move the airfoil to the origin.
+        upper_base.append(v)
 
-points_tip = []
-with open("oa209-il-453.7.csv") as fp:
-    lines = fp.readlines()
-    for line in lines:
-        x = line.split(",")[0]
-        y = line.split(",")[1]
-        points_tip.append(FreeCAD.Vector(xl_base + float(x) + dxl, y_base + float(y), z_base - span))
+lower_base = deepcopy(upper_base) # storage for lower airfoil points.
+# Lower airfoil points are symmetric to upper ones.
+for v in lower_base[1:]:
+    v.scale(1, -1, 1)
+del lower_base[0] # since this is duplicate and not needed.
+lower_base.reverse() # to put points in correct order.
+upper_base.append(deepcopy(lower_base[0])) # to close the airfoil.
+
+# This stores all airfoil points at the base section.
+points_base = lower_base + upper_base
+
+# Chord at base and tip sections are different.
+# So, the following is a scaling factor.
+scale_tip = chord_tip / chord_base;
+
+# Scale and move the airfoil at the tip section to correct place.
+points_tip = deepcopy(points_base)
+for i, v in enumerate(points_tip):
+    points_tip[i] = points_tip[i].scale(scale_tip, scale_tip, 1)
+    points_tip[i] = points_tip[i].add(FreeCAD.Vector(dxl, 0, -span))
 
 # Make a wing.
 wing = make_wing(points_base, points_tip, span)

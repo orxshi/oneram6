@@ -18,6 +18,8 @@ import ObjectsFem
 import femmesh.gmshtools
 from modify_geo import *
 
+doc = FreeCAD.newDocument('newdoc')
+
 def compute_tip_section(xl_base, le_sweep, te_sweep, span):
 
     # Computes and returns the x-distance between leading edges at the base and the tip sections, dxl
@@ -43,18 +45,32 @@ def make_wing(points_base, points_tip, span):
 
     # Create base section of the wing.
     polygon_base = Part.makePolygon(points_base)
-    Part.show(polygon_base)
+    #polygon_base = Draft.makeBSpline(points_base)
+    #Part.show(polygon_base)
+    #Part.show(polygon_base.Shape)
 
     # Create tip section of the wing.
     polygon_tip = Part.makePolygon(points_tip)
-    Part.show(polygon_tip)
+    #polygon_tip = Draft.makeBSpline(points_tip)
+    #spline_from_wire2 = Draft.makeWire(polygon_tip.Points)
+    #Part.show(polygon_tip)
+    #Part.show(polygon_tip.Shape)
+
+    #wing = doc.getObject('Loft')
+    #wing = doc.Loft
+    #wing.Sections = [polygon_base, polygon_tip]
+    #doc.addObject('Part::Loft','Loft')
+    #doc.Loft.Sections = [polygon_base, polygon_tip]
+    #doc.Loft.Sections = [spline_from_wire1, spline_from_wire2]
+    #doc.Loft.Deviation = 0.01
+    #doc.recompute()
+    #loft.Deviation = 0.01
 
     loft = Part.makeLoft([polygon_base, polygon_tip], True)
 
     return loft
 
 
-doc = FreeCAD.newDocument('newdoc')
 
 # Parameters
 chord_base = 805.9 # mm
@@ -68,8 +84,8 @@ le_sweep = 30 # degrees
 te_sweep = 15.8 # degrees
 # A box is used to model farfield and symmetry boundaries.
 # See https://su2code.github.io/tutorials/Inviscid_ONERAM6 for reference.
-box_dx = 20 * chord_base
-box_dy = 20 * chord_base
+box_dx = 10 * chord_base # 20
+box_dy = 10 * chord_base # 20
 box_dz = 10 * span
 
 # Get the distance between leading edges at the base and the tip sections
@@ -118,19 +134,21 @@ for i, v in enumerate(points_tip):
     points_tip[i] = points_tip[i].add(FreeCAD.Vector(dxl, 0, -span))
 
 # Make a wing.
-wing = make_wing(points_base, points_tip, span)
-Part.show(wing)
+loft = make_wing(points_base, points_tip, span)
+Part.show(loft)
+#loft = doc.Loft.Shape
+#solid = Part.makeSolid(loft)
+#solid_loft = doc.addObject("Part::Feature", 'SolidLoft')
+#solid_loft.Shape = solid
 
 # Make a box for outer and symmetry boundaries.
-box = Part.makeBox(box_dx, box_dy, box_dz, FreeCAD.Vector(-box_dx/2,-box_dy/2,-box_dz))
-Part.show(box)
+box = Part.makeBox(box_dx, box_dy, box_dz, FreeCAD.Vector(-box_dx/2+chord_base/2,-box_dy/2,-box_dz))
+#box_object = doc.addObject("Part::Feature", 'Box')
+#box_object.Shape = box
 
 # Cut the wing from the box.
-cut = box.cut(wing)
-Part.show(cut)
-
-# Define the cut as FreeCAD object.
-cut_object = doc.addObject("Part::Feature","Cut")
+cut = box.cut(loft)
+cut_object = doc.addObject("Part::Feature", 'Cut')
 cut_object.Shape = cut
 
 # Define a mesh.
@@ -158,7 +176,8 @@ symmetry = [cut_object, 'Face' + str(3)]
 
 # The wall faces.
 wall = []
-for i in range(7, len(cut_object.Shape.Faces)+1):
+#for i in range(7, len(cut_object.Shape.Faces)+1):
+for i in range(8, len(cut_object.Shape.Faces)+1):
     wall.append((cut_object, 'Face' + str(i)))
 
 # Set mesh groups.
@@ -170,11 +189,11 @@ mg_volume.References = (cut_object, 'Solid1')
 # Create a mesh.
 gmsh_mesh = femmesh.gmshtools.GmshTools(mesh)
 gmsh_mesh.create_mesh()
-
-# After create_mesh(), two files with .geo and .brep extensions are generated in /tmp such as /tmp/.
-# The name of those files are shape2mesh.geo and xxx_Geometry.brep where xxx is the name of the meshed object. 
-# In my case, the meshed object is named as 'Cut'.
-# The geo and brep files will be read by Gmsh.
-# I modify the generated geo file according to my needs.
-# This function generates a file named oneram6.geo.
+#
+## After create_mesh(), two files with .geo and .brep extensions are generated in /tmp such as /tmp/.
+## The name of those files are shape2mesh.geo and xxx_Geometry.brep where xxx is the name of the meshed object. 
+## In my case, the meshed object is named as 'Cut'.
+## The geo and brep files will be read by Gmsh.
+## I modify the generated geo file according to my needs.
+## This function generates a file named oneram6.geo.
 modify_geo("oneram6", 'Cut')

@@ -44,6 +44,8 @@ def modify_geo(out_file_name, shape_name):
     filedata = [line for line in filedata if not 'Geometry.Tolerance' in line]
     filedata = [line for line in filedata if not '//' in line]
 
+    has_wall = False
+
     # These are replacements for certain parameters and also additions. For example, I want Mesh.Format to be specifically 1.
     for i, line in enumerate(filedata):
         if 'Mesh.Format' in line:
@@ -60,6 +62,7 @@ def modify_geo(out_file_name, shape_name):
         if 'Merge' in line:
             filedata[i] =  "Merge \"" + out_file_name + ".brep\";\n\n"
         if 'mg_wall' in line:
+            has_wall = True
             import re
             regex = r"\{(.*?)\}"
             matches = re.findall(regex, line, re.MULTILINE | re.DOTALL)
@@ -73,17 +76,27 @@ def modify_geo(out_file_name, shape_name):
         if 'mg_volume' in line:
             filedata[i] = filedata[i].replace("\"mg_volume\"", "4")
 
-    # Add custom parameters to the file.
     filedata.append('Mesh.MshFileVersion = 2.2;\n')
     filedata.append('Mesh.MeshSizeExtendFromBoundary = 0;\n')
     filedata.append('Mesh.RandomFactor = 1e-6;\n\n')
-    filedata.append('lc = 10;\n')
-    filedata.append('Field[1] = Distance;\n')
-    filedata.append('Field[1].SurfacesList = {' + matches[0] + '};\n')
-    filedata.append('Field[1].NumPointsPerCurve = 200;\n')
-    filedata.append('Field[2] = MathEval;\n')
-    filedata.append('Field[2].F = Sprintf("F1/5 + %g", lc);\n')
-    filedata.append('Background Field = 2;\n')
+
+    if (has_wall):
+        # Add custom parameters to the file.
+        filedata.append('lc = 10;\n')
+        filedata.append('Field[1] = Distance;\n')
+        filedata.append('Field[1].SurfacesList = {' + matches[0] + '};\n')
+        filedata.append('Field[1].NumPointsPerCurve = 200;\n')
+        filedata.append('Field[2] = MathEval;\n')
+        filedata.append('Field[2].F = Sprintf("F1/5 + %g", lc);\n')
+        filedata.append('Background Field = 2;\n')
+    else:
+        filedata.append('origin = newp; Point(origin) = {0,0,0.5};\n')
+        filedata.append('lc = 10;\n')
+        filedata.append('Field[1] = Distance;\n')
+        filedata.append('Field[1].PointsList = {origin};\n')
+        filedata.append('Field[2] = MathEval;\n')
+        filedata.append('Field[2].F = Sprintf("F1/5 + %g", lc);\n')
+        filedata.append('Background Field = 2;\n')
 
     # Write all of the above to the output file.
     with open(out_file_name + '.geo', 'w') as file:
